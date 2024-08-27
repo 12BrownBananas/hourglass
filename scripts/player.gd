@@ -9,6 +9,7 @@ var viable_tiles: Array[Vector2];
 var path_index: int;
 var moving: bool;
 var max_distance: int; #in units, not tiles (but rounds down to tiles)
+var inventory: Inventory;
 
 func _ready():
 	path_index = 0;
@@ -17,6 +18,7 @@ func _ready():
 	viable_tiles = [];
 	move_target = Vector2(position.x, position.y);
 	max_distance = 128;
+	inventory = Inventory.new();
 
 func _process(_delta):
 	_animated_sprite.play("default");

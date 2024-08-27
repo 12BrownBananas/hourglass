@@ -1,9 +1,17 @@
 extends Node2D
 
-@onready var _player = $Player;
-@onready var _tilemap = $TileMap;
-@onready var _cursor = $Cursor;
-@onready var _path_forecast = $PathForecast;
+#data components
+@onready var _icon_lookup = $Data/IconLookup; 
+#scene components
+@onready var _player = $Scene/Player;
+@onready var _tilemap = $Scene/TileMap;
+@onready var _cursor = $Scene/Cursor;
+@onready var _path_forecast = $Scene/PathForecast;
+
+@onready var _hud = $Scene/HUD;
+@onready var _item_select = $Scene/HUD/ItemSelect;
+
+var item_lookup: ItemLookup;
 
 const scene_dimensions = Vector2i(480, 270);
 const tile_size = 16;
@@ -20,6 +28,10 @@ func _input(event):
 	_cursor.position.x = closestTile.position.x;
 	_cursor.position.y = closestTile.position.y;
 	
+	if event is InputEventKey:
+		if (event.pressed and event.keycode == KEY_0):
+			_item_select.toggle_in();
+	
 	if event is InputEventMouseButton:
 		if (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
 			_player.set_move_path(_tilemap.find_path(_player.position, _cursor.position));
@@ -29,6 +41,7 @@ func _input(event):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	#initialize grid
 	var xgrid = floor(scene_dimensions.x/tile_size+.99);
 	var ygrid = floor(scene_dimensions.y/tile_size+.99);
 	grid_map = []
@@ -36,6 +49,18 @@ func _ready() -> void:
 		grid_map.append([]);
 		for j in range(ygrid):
 			grid_map[i].append(GridTile.new(i*tile_size+tile_size/2, j*tile_size+tile_size/2));
+			
+	#initialize player inventory
+	item_lookup = ItemLookup.new(_icon_lookup);
+	var init_list: Array[ItemLookup.Item] = [];
+	init_list.append(item_lookup.get_item(1));
+	init_list.append(item_lookup.get_item(0));
+	init_list.append(item_lookup.get_item(2));
+	init_list.append(item_lookup.get_item(1));
+	_player.inventory.add_items(init_list);
+	
+	#test synchronizing player inventory with item select box
+	_item_select.add_items(_player.inventory.items);
 	
 func get_closest_tile(position: Vector2) -> GridTile:
 	var currx = clamp(floor(((position.x-tile_size/2)/tile_size)+0.5), 0.0, len(grid_map)-1);
@@ -67,3 +92,5 @@ func _draw():
 			var dx = i.x-tile_size/2;
 			var dy = i.y-tile_size/2;
 			draw_rect(Rect2(dx, dy, tile_size, tile_size), Color(0.0, 0.0, 1.0, 0.25), true);
+	#var item = _player.inventory.get_item(0)
+	#draw_texture(item._appearance._sprite, _player.position+Vector2(0.0, -12.0));
