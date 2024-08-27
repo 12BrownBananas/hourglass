@@ -69,3 +69,6 @@ sprite_frames = SubResource("SpriteFrames_a46ud")
 
 [node name="TileMap2" type="TileMap" parent="."]
 format = 2
+
+[node name="PathForecast" type="Line2D" parent="."]
+z_index = -1

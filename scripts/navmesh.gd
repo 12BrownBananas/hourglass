@@ -36,7 +36,7 @@ func find_path(start_pos: Vector2, end_pos: Vector2) -> Array[Vector2]:
 	if start_cell == end_cell or !astar_grid.is_in_boundsv(start_cell) or !astar_grid.is_in_boundsv(end_cell):
 		return []
 	var path = astar_grid.get_id_path(start_cell, end_cell);
-	var floatPath: Array[Vector2] = []
+	var float_path: Array[Vector2] = []
 	for p in path:
-		floatPath.append(Vector2(float(p.x)*astar_grid.cell_size.x+(astar_grid.cell_size.x/2), float(p.y)*astar_grid.cell_size.y+(astar_grid.cell_size.y/2)));
-	return floatPath;
+		float_path.append(Vector2(float(p.x)*astar_grid.cell_size.x+(astar_grid.cell_size.x/2), float(p.y)*astar_grid.cell_size.y+(astar_grid.cell_size.y/2)));
+	return float_path;
