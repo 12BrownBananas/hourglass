@@ -1,5 +1,7 @@
 extends Node2D
 
+class_name GameManager;
+
 #data components
 @onready var _icon_lookup = $Data/IconLookup; 
 #scene components
@@ -7,21 +9,34 @@ extends Node2D
 @onready var _tilemap = $Scene/TileMap;
 @onready var _cursor = $Scene/Cursor;
 @onready var _path_forecast = $Scene/PathForecast;
-
 @onready var _hud = $Scene/HUD;
 @onready var _item_select = $Scene/HUD/ItemSelect;
+@onready var _action_select = $Scene/HUD/ActionSelect;
 
 var item_lookup: ItemLookup;
-
 const scene_dimensions = Vector2i(480, 270);
 const tile_size = 16;
 var grid_size;
 var grid_map;
 
+class PlayerAction:
+	var _name: String;
+	var _callback: Callable;
+	func _init(name: String, callback: Callable):
+		_name = name;
+		_callback = callback;
+	func get_name():
+		return _name;
+	func invoke():
+		_callback.call();
+
 class GridTile:
 	var position;
 	func _init(x: float, y: float):
 		position = Vector2(x, y);
+
+func wait_callback():
+	print("Wait pressed");
 
 func _input(event):
 	var closestTile = get_closest_tile(get_viewport().get_mouse_position());
@@ -29,8 +44,15 @@ func _input(event):
 	_cursor.position.y = closestTile.position.y;
 	
 	if event is InputEventKey:
-		if (event.pressed and event.keycode == KEY_0):
-			_item_select.toggle_in();
+		if (event.pressed):
+			if (event.keycode == KEY_1):
+				_action_select.clear_actions();
+				var action_list: Array[PlayerAction] = [];
+				action_list.append(PlayerAction.new("Wait", Callable(self, "wait_callback")));
+				_action_select.add_actions(action_list);
+				_action_select.toggle_in();
+			if (event.keycode == KEY_2):
+				_item_select.toggle_in();
 	
 	if event is InputEventMouseButton:
 		if (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):

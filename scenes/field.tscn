@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=20 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
@@ -14,7 +14,8 @@
 [ext_resource type="Texture2D" uid="uid://b2k0ltb37ihsh" path="res://sprites/items/bow_0.png" id="12_m3me3"]
 [ext_resource type="Texture2D" uid="uid://d12y12b7htadc" path="res://sprites/items/axe_0.png" id="13_v4six"]
 [ext_resource type="Script" path="res://scripts/ui_controller.gd" id="14_u3ryo"]
-[ext_resource type="Script" path="res://scripts/item_select.gd" id="15_l6ap5"]
+[ext_resource type="Script" path="res://scripts/ui_components/action_select.gd" id="15_4yt7t"]
+[ext_resource type="Script" path="res://scripts/ui_components/item_select.gd" id="15_l6ap5"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb7wn"]
 animations = [{
@@ -87,14 +88,38 @@ z_index = -1
 [node name="HUD" type="Node2D" parent="Scene"]
 script = ExtResource("14_u3ryo")
 
-[node name="Actions" type="Container" parent="Scene/HUD"]
-layout_direction = 3
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="ActionSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("_header_label", "_scrollbox", "_scrollbox_button_area")]
+position = Vector2(190, 0)
+script = ExtResource("15_4yt7t")
+_header_label = NodePath("Header")
+_scrollbox = NodePath("ActionOptions")
+_scrollbox_button_area = NodePath("ActionOptions/VBoxContainer")
 
-[node name="ItemSelect" type="Node2D" parent="Scene/HUD"]
+[node name="ActionOptions" type="ScrollContainer" parent="Scene/HUD/ActionSelect"]
+offset_left = 300.0
+offset_top = 40.0
+offset_right = 460.0
+offset_bottom = 264.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ActionSelect/ActionOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Header" type="Label" parent="Scene/HUD/ActionSelect"]
+offset_left = 300.0
+offset_top = 16.0
+offset_right = 460.0
+offset_bottom = 40.0
+text = "Action Select"
+horizontal_alignment = 1
+
+[node name="ItemSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("_header_label", "_scrollbox", "_scrollbox_button_area")]
 position = Vector2(190, 0)
 script = ExtResource("15_l6ap5")
+_header_label = NodePath("Header")
+_scrollbox = NodePath("ItemSelectOptions")
+_scrollbox_button_area = NodePath("ItemSelectOptions/VBoxContainer")
 
 [node name="ItemSelectOptions" type="ScrollContainer" parent="Scene/HUD/ItemSelect"]
 clip_contents = false

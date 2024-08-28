@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var _actions = $Actions;
+@onready var _actions = $ActionSelect;
 @onready var _item_select = $ItemSelect;
 @onready var _engagement_forecast = $EngagementForecast;
 @onready var _hourglass = $Hourglass;
