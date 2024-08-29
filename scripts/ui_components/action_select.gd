@@ -10,11 +10,12 @@ func add_actions(action_list: Array[GameManager.PlayerAction]):
 		action_buttons.append(button);
 		button.pressed.connect(button.on_pressed);
 		_scrollbox_button_area.add_child(button);
+		action_buttons.append(button);
 	queue_redraw();
 	
 func clear_actions():
 	for button in action_buttons:
-		remove_child(button);
+		_scrollbox_button_area.remove_child(button);
 	action_buttons.clear();
 	queue_redraw();
 

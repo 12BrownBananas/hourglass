@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=24 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
@@ -15,18 +15,11 @@
 [ext_resource type="Texture2D" uid="uid://d12y12b7htadc" path="res://sprites/items/axe_0.png" id="13_v4six"]
 [ext_resource type="Script" path="res://scripts/ui_controller.gd" id="14_u3ryo"]
 [ext_resource type="Script" path="res://scripts/ui_components/action_select.gd" id="15_4yt7t"]
-[ext_resource type="Script" path="res://scripts/ui_components/hourglass.gd" id="15_jb7sx"]
 [ext_resource type="Script" path="res://scripts/ui_components/item_select.gd" id="15_l6ap5"]
 [ext_resource type="Script" path="res://scripts/ui_components/engagement_forecast.gd" id="17_byv0q"]
-[ext_resource type="Script" path="res://scripts/effects/toggleable_semitransparent.gd" id="17_mbav0"]
 [ext_resource type="Script" path="res://scripts/ui_components/engagement_forecast_subsection.gd" id="18_lxb3v"]
 [ext_resource type="Texture2D" uid="uid://dsci5ba0k2qrs" path="res://sprites/portraits/portrait_default.png" id="18_pfn48"]
 [ext_resource type="LabelSettings" uid="uid://dbehmj7by5nvc" path="res://label_settings/hud_header.tres" id="19_eqynb"]
-[ext_resource type="Texture2D" uid="uid://ckv6wo4b8sfhn" path="res://sprites/hud/hourglass_icon_placeholder.png" id="21_0jc6f"]
-[ext_resource type="Texture2D" uid="uid://bcu6h4tycatp8" path="res://sprites/hud/exp_bar.png" id="21_dwert"]
-[ext_resource type="Script" path="res://scripts/ui_components/hover_info.gd" id="25_x37r2"]
-[ext_resource type="Script" path="res://scripts/ui_components/autosizing_background.gd" id="26_tsoxu"]
-[ext_resource type="Script" path="res://scripts/ui_components/enemy_information.gd" id="27_a6g77"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb7wn"]
 animations = [{
@@ -57,11 +50,6 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
-
-[sub_resource type="LabelSettings" id="LabelSettings_xrjhq"]
-font_size = 8
-outline_size = 5
-outline_color = Color(0, 0, 0, 1)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_kjnsb")
@@ -104,144 +92,82 @@ z_index = -1
 [node name="HUD" type="Node2D" parent="Scene"]
 script = ExtResource("14_u3ryo")
 
-[node name="Hourglass" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("player", "cursor")]
-script = ExtResource("15_jb7sx")
-player = NodePath("../../Player")
-cursor = NodePath("../../Cursor")
-zone = Rect2(0, 0, 480, 52)
-
-[node name="ExpBar" type="Sprite2D" parent="Scene/HUD/Hourglass"]
-texture = ExtResource("21_dwert")
-centered = false
-offset = Vector2(48, 20)
-script = ExtResource("17_mbav0")
-untoggled_transparency = 1.0
-toggled_transparency = 0.3
-lerp_factor = 0.25
-
-[node name="HourglassSprite" type="Sprite2D" parent="Scene/HUD/Hourglass"]
-texture = ExtResource("21_0jc6f")
-centered = false
-offset = Vector2(8, 4)
-
 [node name="ActionSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("_header_label", "_scrollbox", "_scrollbox_button_area")]
 position = Vector2(190, 0)
 script = ExtResource("15_4yt7t")
-xpad = 4.0
-_header_label = NodePath("Control/Header")
-_scrollbox = NodePath("Control/ActionOptions")
-_scrollbox_button_area = NodePath("Control/ActionOptions/VBoxContainer")
+xpad = null
+_header_label = NodePath("Header")
+_scrollbox = NodePath("ActionOptions")
+_scrollbox_button_area = NodePath("ActionOptions/VBoxContainer")
+in_position = null
 out_position = Vector2(190, 0)
-lerp_factor = 0.25
+lerp_factor = null
 
-[node name="Control" type="Control" parent="Scene/HUD/ActionSelect"]
-layout_mode = 3
-anchors_preset = 0
+[node name="ActionOptions" type="ScrollContainer" parent="Scene/HUD/ActionSelect"]
 offset_left = 300.0
-offset_top = 16.0
+offset_top = 40.0
 offset_right = 460.0
-offset_bottom = 240.0
+offset_bottom = 264.0
 
-[node name="ColorRect" type="ColorRect" parent="Scene/HUD/ActionSelect/Control"]
-layout_mode = 0
-offset_right = 160.0
-offset_bottom = 248.0
-color = Color(0, 0, 0, 0.501961)
-
-[node name="ActionOptions" type="ScrollContainer" parent="Scene/HUD/ActionSelect/Control"]
-offset_top = 24.0
-offset_right = 160.0
-offset_bottom = 248.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ActionSelect/Control/ActionOptions"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ActionSelect/ActionOptions"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Header" type="Label" parent="Scene/HUD/ActionSelect/Control"]
-offset_right = 160.0
-offset_bottom = 24.0
-text = "Action Select"
-horizontal_alignment = 1
-
-[node name="ItemSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("options", "item_info", "_header_label", "_scrollbox", "_scrollbox_button_area")]
-position = Vector2(190, 0)
-script = ExtResource("15_l6ap5")
-options = NodePath("Control")
-item_info = NodePath("../ItemInformation")
-info_alignment = 1
-xpad = 4.0
-_header_label = NodePath("Control/Header")
-_scrollbox = NodePath("Control/ItemSelectOptions")
-_scrollbox_button_area = NodePath("Control/ItemSelectOptions/VBoxContainer")
-out_position = Vector2(190, 0)
-lerp_factor = 0.25
-
-[node name="Control" type="Control" parent="Scene/HUD/ItemSelect"]
-layout_mode = 3
-anchors_preset = 0
+[node name="Header" type="Label" parent="Scene/HUD/ActionSelect"]
 offset_left = 300.0
 offset_top = 16.0
 offset_right = 460.0
-offset_bottom = 264.0
+offset_bottom = 40.0
+text = "Action Select"
+horizontal_alignment = 1
 
-[node name="ColorRect" type="ColorRect" parent="Scene/HUD/ItemSelect/Control"]
-layout_mode = 0
-offset_right = 160.0
-offset_bottom = 248.0
-color = Color(0, 0, 0, 0.501961)
+[node name="ItemSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("_header_label", "_scrollbox", "_scrollbox_button_area")]
+position = Vector2(190, 0)
+script = ExtResource("15_l6ap5")
+_header_label = NodePath("Header")
+_scrollbox = NodePath("ItemSelectOptions")
+_scrollbox_button_area = NodePath("ItemSelectOptions/VBoxContainer")
 
-[node name="ItemSelectOptions" type="ScrollContainer" parent="Scene/HUD/ItemSelect/Control"]
+[node name="ItemSelectOptions" type="ScrollContainer" parent="Scene/HUD/ItemSelect"]
 clip_contents = false
 custom_minimum_size = Vector2(160, 0)
 layout_direction = 2
-offset_top = 24.0
-offset_right = 160.0
-offset_bottom = 248.0
+offset_left = 300.0
+offset_top = 40.0
+offset_right = 460.0
+offset_bottom = 264.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ItemSelect/Control/ItemSelectOptions"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ItemSelect/ItemSelectOptions"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Header" type="Label" parent="Scene/HUD/ItemSelect/Control"]
-offset_right = 160.0
-offset_bottom = 24.0
+[node name="Header" type="Label" parent="Scene/HUD/ItemSelect"]
+offset_left = 300.0
+offset_top = 16.0
+offset_right = 460.0
+offset_bottom = 40.0
 text = "Item Select"
 horizontal_alignment = 1
 
-[node name="EngagementForecast" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("left_component", "right_component", "drop_area", "drop_button", "item_info")]
-position = Vector2(-190, 48)
+[node name="EngagementForecast" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("left_component", "right_component")]
+position = Vector2(-190, 0)
 script = ExtResource("17_byv0q")
-left_component = NodePath("Control/Left")
-right_component = NodePath("Control/Right")
-drop_area = NodePath("Control/DropIndicator")
-drop_button = NodePath("Control/DropIndicator/DropButton")
-item_info = NodePath("../ItemInformation")
-in_position = Vector2(0, 48)
-out_position = Vector2(-190, 48)
-lerp_factor = 0.25
+left_component = NodePath("Left")
+right_component = NodePath("Right")
+in_position = null
+out_position = Vector2(-190, 0)
+lerp_factor = null
 
-[node name="Control" type="Control" parent="Scene/HUD/EngagementForecast"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 190.0
-offset_bottom = 190.0
-
-[node name="ColorRect" type="ColorRect" parent="Scene/HUD/EngagementForecast/Control"]
-layout_mode = 0
-offset_right = 190.0
-offset_bottom = 190.0
-color = Color(0, 0, 0, 0.501961)
-
-[node name="Left" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("stats_readout")]
+[node name="Left" type="Node2D" parent="Scene/HUD/EngagementForecast" node_paths=PackedStringArray("stats_readout")]
 script = ExtResource("18_lxb3v")
 stats_readout = NodePath("VBoxContainer")
 
-[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Left"]
 offset_right = 95.0
 offset_bottom = 24.0
 text = "You"
@@ -249,11 +175,11 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Portrait" type="Sprite2D" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="Portrait" type="Sprite2D" parent="Scene/HUD/EngagementForecast/Left"]
 position = Vector2(48, 48)
 texture = ExtResource("18_pfn48")
 
-[node name="Health" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="Health" type="Label" parent="Scene/HUD/EngagementForecast/Left"]
 offset_top = 65.0
 offset_right = 95.0
 offset_bottom = 79.0
@@ -262,19 +188,19 @@ text = "HP: n/n"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/EngagementForecast/Left"]
 offset_top = 88.0
 offset_right = 95.0
 offset_bottom = 138.0
 
-[node name="Damage" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/VBoxContainer"]
+[node name="Damage" type="Label" parent="Scene/HUD/EngagementForecast/Left/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "DMG: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="AttackCounter" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/VBoxContainer/Damage"]
+[node name="AttackCounter" type="Label" parent="Scene/HUD/EngagementForecast/Left/VBoxContainer/Damage"]
 layout_mode = 2
 offset_left = 53.0
 offset_right = 65.0
@@ -283,25 +209,25 @@ size_flags_horizontal = 4
 text = "x2"
 label_settings = ExtResource("19_eqynb")
 
-[node name="HitChance" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/VBoxContainer"]
+[node name="HitChance" type="Label" parent="Scene/HUD/EngagementForecast/Left/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "ACC: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="CritChance" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/VBoxContainer"]
+[node name="CritChance" type="Label" parent="Scene/HUD/EngagementForecast/Left/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "CRIT: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="Right" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("stats_readout")]
+[node name="Right" type="Node2D" parent="Scene/HUD/EngagementForecast" node_paths=PackedStringArray("stats_readout")]
 script = ExtResource("18_lxb3v")
 stats_readout = NodePath("VBoxContainer")
 
-[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right"]
+[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Right"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -314,11 +240,11 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Portrait" type="Sprite2D" parent="Scene/HUD/EngagementForecast/Control/Right"]
+[node name="Portrait" type="Sprite2D" parent="Scene/HUD/EngagementForecast/Right"]
 position = Vector2(142, 48)
 texture = ExtResource("18_pfn48")
 
-[node name="Health" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right"]
+[node name="Health" type="Label" parent="Scene/HUD/EngagementForecast/Right"]
 offset_left = 95.0
 offset_top = 65.0
 offset_right = 190.0
@@ -327,20 +253,20 @@ text = "HP: n/n"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/EngagementForecast/Control/Right"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/EngagementForecast/Right"]
 offset_left = 95.0
 offset_top = 88.0
 offset_right = 190.0
 offset_bottom = 138.0
 
-[node name="Damage" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right/VBoxContainer"]
+[node name="Damage" type="Label" parent="Scene/HUD/EngagementForecast/Right/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "DMG: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="AttackCounter" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right/VBoxContainer/Damage"]
+[node name="AttackCounter" type="Label" parent="Scene/HUD/EngagementForecast/Right/VBoxContainer/Damage"]
 layout_mode = 2
 offset_left = 53.0
 offset_right = 65.0
@@ -349,200 +275,20 @@ size_flags_horizontal = 4
 text = "x2"
 label_settings = ExtResource("19_eqynb")
 
-[node name="HitChance" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right/VBoxContainer"]
+[node name="HitChance" type="Label" parent="Scene/HUD/EngagementForecast/Right/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "ACC: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="CritChance" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right/VBoxContainer"]
+[node name="CritChance" type="Label" parent="Scene/HUD/EngagementForecast/Right/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "CRIT: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="DropIndicator" type="Control" parent="Scene/HUD/EngagementForecast/Control"]
-anchors_preset = 0
-offset_top = 148.0
-offset_right = 190.0
-offset_bottom = 180.0
-
-[node name="Label" type="Label" parent="Scene/HUD/EngagementForecast/Control/DropIndicator"]
-layout_mode = 0
-offset_left = 17.0
-offset_top = -5.0
-offset_right = 57.0
-offset_bottom = 10.0
-text = "Drops:"
-label_settings = ExtResource("19_eqynb")
-
-[node name="DropButton" type="Button" parent="Scene/HUD/EngagementForecast/Control/DropIndicator"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 12.0
-offset_right = 176.0
-offset_bottom = 36.0
-theme_override_colors/icon_disabled_color = Color(1, 1, 1, 1)
-disabled = true
-button_mask = 0
-icon = ExtResource("2_dhy2t")
-
-[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/DropIndicator/DropButton"]
-layout_mode = 0
-offset_right = 160.0
-offset_bottom = 24.0
-text = "Nothing"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Durability" type="Label" parent="Scene/HUD/EngagementForecast/Control/DropIndicator/DropButton"]
-layout_mode = 0
-offset_left = 3.0
-offset_right = 157.0
-offset_bottom = 24.0
-text = "n/n"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="ItemInformation" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("stats_container", "description")]
-visible = false
-script = ExtResource("25_x37r2")
-stats_container = NodePath("Control")
-description = NodePath("Control/DescriptionBackground")
-
-[node name="Control" type="Control" parent="Scene/HUD/ItemInformation"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 120.0
-offset_bottom = 36.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="BackgroundColor" type="ColorRect" parent="Scene/HUD/ItemInformation/Control"]
-layout_mode = 2
-offset_right = 120.0
-offset_bottom = 36.0
-color = Color(0, 0, 0, 0.501961)
-
-[node name="DescriptionBackground" type="ColorRect" parent="Scene/HUD/ItemInformation/Control" node_paths=PackedStringArray("text")]
-layout_mode = 0
-offset_top = 36.0
-offset_right = 120.0
-offset_bottom = 76.0
-color = Color(0, 0, 0, 0.501961)
-script = ExtResource("26_tsoxu")
-text = NodePath("Description")
-
-[node name="Description" type="Label" parent="Scene/HUD/ItemInformation/Control/DescriptionBackground"]
-custom_minimum_size = Vector2(120, 0)
-offset_right = 120.0
-offset_bottom = 27.0
-text = "String describing this item, if it has any special attributes."
-label_settings = SubResource("LabelSettings_xrjhq")
-autowrap_mode = 2
-
-[node name="StatsContainer" type="GridContainer" parent="Scene/HUD/ItemInformation/Control"]
-layout_mode = 2
-offset_right = 120.0
-offset_bottom = 32.0
-columns = 2
-
-[node name="Power" type="Label" parent="Scene/HUD/ItemInformation/Control/StatsContainer"]
-layout_mode = 2
-text = "Power: ###"
-label_settings = ExtResource("19_eqynb")
-
-[node name="Accuracy" type="Label" parent="Scene/HUD/ItemInformation/Control/StatsContainer"]
-layout_mode = 2
-text = "Acc: ###"
-label_settings = ExtResource("19_eqynb")
-
-[node name="CritChance" type="Label" parent="Scene/HUD/ItemInformation/Control/StatsContainer"]
-layout_mode = 2
-text = "Crit%: ###"
-label_settings = ExtResource("19_eqynb")
-
-[node name="Type" type="Label" parent="Scene/HUD/ItemInformation/Control/StatsContainer"]
-layout_mode = 2
-text = "Type: ####"
-label_settings = ExtResource("19_eqynb")
-
-[node name="EnemyInformation" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("drop_area", "drop_button", "item_info")]
-position = Vector2(-128, 64)
-script = ExtResource("27_a6g77")
-in_position_left = Vector2(0, 64)
-out_position_left = Vector2(-128, 64)
-in_position_right = Vector2(352, 64)
-out_position_right = Vector2(480, 64)
-drop_area = NodePath("Control/DropButton")
-drop_button = NodePath("Control/DropButton")
-item_info = NodePath("../ItemInformation")
-in_position = Vector2(0, 64)
-out_position = Vector2(-128, 64)
-lerp_factor = 0.25
-
-[node name="Control" type="Control" parent="Scene/HUD/EnemyInformation"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 128.0
-offset_bottom = 100.0
-
-[node name="ColorRect" type="ColorRect" parent="Scene/HUD/EnemyInformation/Control"]
-layout_mode = 0
-offset_right = 128.0
-offset_bottom = 100.0
-color = Color(0, 0, 0, 0.501961)
-
-[node name="Name" type="Label" parent="Scene/HUD/EnemyInformation/Control"]
-layout_mode = 0
-offset_right = 128.0
-offset_bottom = 14.0
-text = "Opponent Name"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-
-[node name="Portrait" type="Sprite2D" parent="Scene/HUD/EnemyInformation/Control"]
-position = Vector2(64, 32)
-texture = ExtResource("18_pfn48")
-
-[node name="HP" type="Label" parent="Scene/HUD/EnemyInformation/Control"]
-layout_mode = 2
-offset_top = 52.0
-offset_right = 128.0
-offset_bottom = 66.0
-text = "HP: n/n"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-
-[node name="DropButton" type="Button" parent="Scene/HUD/EnemyInformation/Control"]
-offset_left = 4.0
-offset_top = 68.0
-offset_right = 124.0
-offset_bottom = 92.0
-theme_override_colors/icon_disabled_color = Color(1, 1, 1, 1)
-disabled = true
-button_mask = 0
-icon = ExtResource("2_dhy2t")
-
-[node name="Name" type="Label" parent="Scene/HUD/EnemyInformation/Control/DropButton"]
-layout_mode = 0
-offset_right = 120.0
-offset_bottom = 24.0
-text = "Nothing"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Durability" type="Label" parent="Scene/HUD/EnemyInformation/Control/DropButton"]
-layout_mode = 0
-offset_left = 2.0
-offset_right = 118.0
-offset_bottom = 24.0
-text = "n/n"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 2
-vertical_alignment = 1
+[node name="Hourglass" type="Container" parent="Scene/HUD"]
+offset_right = 40.0
+offset_bottom = 40.0

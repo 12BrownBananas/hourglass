@@ -12,6 +12,8 @@ class_name GameManager;
 @onready var _hud = $Scene/HUD;
 @onready var _item_select = $Scene/HUD/ItemSelect;
 @onready var _action_select = $Scene/HUD/ActionSelect;
+@onready var _engagement_forecast = $Scene/HUD/EngagementForecast;
+@onready var _enemy_information = $Scene/HUD/EnemyInformation;
 
 var item_lookup: ItemLookup;
 const scene_dimensions = Vector2i(480, 270);
@@ -53,6 +55,17 @@ func _input(event):
 				_action_select.toggle_in();
 			if (event.keycode == KEY_2):
 				_item_select.toggle_in();
+			if (event.keycode == KEY_3):
+				_engagement_forecast.toggle_in();
+			if (event.keycode == KEY_4):
+				if (!_enemy_information.in_view):
+					#note that get_viewport.size returns in gui coordinates, whereas mouse position is in 2D coordinates.
+					if get_viewport().get_mouse_position().x < 240.0:#get_viewport().size.x/2:
+						_enemy_information.jump_left();
+					else:
+						_enemy_information.jump_right();
+				_enemy_information.toggle_in();
+				
 	
 	if event is InputEventMouseButton:
 		if (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
