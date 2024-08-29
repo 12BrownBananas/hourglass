@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=33 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
@@ -28,8 +28,6 @@
 [ext_resource type="Script" path="res://scripts/ui_components/autosizing_background.gd" id="26_tsoxu"]
 [ext_resource type="Script" path="res://scripts/ui_components/enemy_information.gd" id="27_a6g77"]
 [ext_resource type="Script" path="res://scripts/ui_components/item_discard_select.gd" id="28_8r773"]
-[ext_resource type="Script" path="res://scripts/ui_components/submenu.gd" id="29_lpxx5"]
-[ext_resource type="Script" path="res://scripts/ui_components/dialog_box.gd" id="30_boefs"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb7wn"]
 animations = [{
@@ -168,13 +166,11 @@ offset_bottom = 24.0
 text = "Action Select"
 horizontal_alignment = 1
 
-[node name="ItemSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("options", "item_info", "context_sensitive_menu", "dialog_box", "_header_label", "_scrollbox", "_scrollbox_button_area")]
+[node name="ItemSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("options", "item_info", "_header_label", "_scrollbox", "_scrollbox_button_area")]
 position = Vector2(190, 0)
 script = ExtResource("15_l6ap5")
 options = NodePath("Control")
 item_info = NodePath("../ItemInformation")
-context_sensitive_menu = NodePath("../ItemManagementSubmenu")
-dialog_box = NodePath("../DialogBox")
 info_alignment = 1
 xpad = 4.0
 _header_label = NodePath("Control/Header")
@@ -554,21 +550,17 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="ItemDiscardSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("new_label", "background", "options", "item_info", "context_sensitive_menu", "dialog_box", "_header_label", "_scrollbox", "_scrollbox_button_area")]
+[node name="ItemDiscardSelect" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("new_label", "background", "options", "item_info", "_header_label", "_scrollbox", "_scrollbox_button_area")]
 position = Vector2(190, 0)
 script = ExtResource("28_8r773")
-new_label = NodePath("Control/ScrollContainer/VBoxContainer/NewLabel")
+new_label = NodePath("Control/NewLabel")
 background = NodePath("Control/ColorRect")
 pre_new_item_pad_value = 12.0
 options = NodePath("Control")
 item_info = NodePath("../ItemInformation")
-context_sensitive_menu = NodePath("../ItemManagementSubmenu")
-dialog_box = NodePath("../DialogBox")
-info_alignment = 1
 _header_label = NodePath("Control/DiscardPrompt")
 _scrollbox = NodePath("Control/ScrollContainer")
 _scrollbox_button_area = NodePath("Control/ScrollContainer/VBoxContainer")
-in_position = Vector2(-16, 0)
 out_position = Vector2(190, 0)
 
 [node name="Control" type="Control" parent="Scene/HUD/ItemDiscardSelect"]
@@ -586,7 +578,6 @@ offset_bottom = 44.0
 color = Color(0, 0, 0, 0.501961)
 
 [node name="DiscardPrompt" type="Label" parent="Scene/HUD/ItemDiscardSelect/Control"]
-layout_mode = 0
 offset_top = 8.0
 offset_right = 190.0
 offset_bottom = 31.0
@@ -595,101 +586,41 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="NewLabel" type="Label" parent="Scene/HUD/ItemDiscardSelect/Control"]
+offset_top = 8.0
+offset_right = 95.0
+offset_bottom = 22.0
+text = "New:"
+label_settings = ExtResource("19_eqynb")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="ScrollContainer" type="ScrollContainer" parent="Scene/HUD/ItemDiscardSelect/Control"]
 layout_mode = 0
 offset_top = 32.0
 offset_right = 190.0
-offset_bottom = 208.0
+offset_bottom = 192.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ItemDiscardSelect/Control/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="NewLabel" type="Label" parent="Scene/HUD/ItemDiscardSelect/Control/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "        New:"
-label_settings = ExtResource("19_eqynb")
-vertical_alignment = 1
-
-[node name="ItemManagementSubmenu" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("button_area", "background")]
+[node name="ItemManagementSubmenu" type="Node2D" parent="Scene/HUD"]
 visible = false
-script = ExtResource("29_lpxx5")
-button_area = NodePath("Control/VBoxContainer")
-background = NodePath("Control/ColorRect")
 
 [node name="Control" type="Control" parent="Scene/HUD/ItemManagementSubmenu"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 80.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="ColorRect" type="ColorRect" parent="Scene/HUD/ItemManagementSubmenu/Control"]
 layout_mode = 0
-offset_right = 80.0
+offset_right = 40.0
+offset_bottom = 40.0
 color = Color(0, 0, 0, 0.501961)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Scene/HUD/ItemManagementSubmenu/Control"]
-layout_mode = 0
-offset_right = 80.0
-
-[node name="DialogBox" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("prompt", "yes_button", "no_button")]
-visible = false
-position = Vector2(120, 75)
-script = ExtResource("30_boefs")
-prompt = NodePath("Control/Label")
-yes_button = NodePath("Control/YesBtn")
-no_button = NodePath("Control/NoBtn")
-
-[node name="Control" type="Control" parent="Scene/HUD/DialogBox"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 240.0
-offset_bottom = 120.0
-
-[node name="ColorRect" type="ColorRect" parent="Scene/HUD/DialogBox/Control"]
-layout_mode = 0
-offset_right = 240.0
-offset_bottom = 120.0
-color = Color(0, 0, 0, 0.784314)
-
-[node name="Label" type="Label" parent="Scene/HUD/DialogBox/Control"]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 16.0
-offset_right = 230.0
-offset_bottom = 72.0
-text = "This will yert the papasco grozz. Continue?"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-
-[node name="YesBtn" type="Button" parent="Scene/HUD/DialogBox/Control"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 80.0
-offset_right = 88.0
-offset_bottom = 104.0
-
-[node name="Label" type="Label" parent="Scene/HUD/DialogBox/Control/YesBtn"]
-layout_mode = 0
-offset_right = 64.0
-offset_bottom = 24.0
-text = "Yes"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="NoBtn" type="Button" parent="Scene/HUD/DialogBox/Control"]
-layout_mode = 0
-offset_left = 152.0
-offset_top = 80.0
-offset_right = 216.0
-offset_bottom = 104.0
-
-[node name="Label" type="Label" parent="Scene/HUD/DialogBox/Control/NoBtn"]
-layout_mode = 0
-offset_right = 64.0
-offset_bottom = 24.0
-text = "No"
-label_settings = ExtResource("19_eqynb")
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_right = 40.0
+offset_bottom = 40.0

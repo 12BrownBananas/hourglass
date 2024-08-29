@@ -11,6 +11,7 @@ class_name GameManager;
 @onready var _path_forecast = $Scene/PathForecast;
 @onready var _hud = $Scene/HUD;
 @onready var _item_select = $Scene/HUD/ItemSelect;
+@onready var _item_discard_select = $Scene/HUD/ItemDiscardSelect;
 @onready var _action_select = $Scene/HUD/ActionSelect;
 @onready var _engagement_forecast = $Scene/HUD/EngagementForecast;
 @onready var _enemy_information = $Scene/HUD/EnemyInformation;
@@ -65,6 +66,8 @@ func _input(event):
 					else:
 						_enemy_information.jump_right();
 				_enemy_information.toggle_in();
+			if (event.keycode == KEY_5):
+				_item_discard_select.toggle_in();
 				
 	
 	if event is InputEventMouseButton:
@@ -96,6 +99,8 @@ func _ready() -> void:
 	
 	#test synchronizing player inventory with item select box
 	_item_select.add_items(_player.inventory.items);
+	var test_new = item_lookup.get_item(1);
+	_item_discard_select.populate(_player.inventory.items, test_new);
 	
 func get_closest_tile(position: Vector2) -> GridTile:
 	var currx = clamp(floor(((position.x-tile_size/2)/tile_size)+0.5), 0.0, len(grid_map)-1);
