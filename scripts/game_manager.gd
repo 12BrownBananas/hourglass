@@ -24,8 +24,12 @@ var item_lookup: ItemLookup;
 var enemy_lookup: EnemyLookup;
 const scene_dimensions = Vector2i(480, 270);
 const tile_size = 16;
-var grid_size;
-var grid_map;
+var grid_map: Array[GridMapRow];
+
+class GridMapRow:
+	var row: Array[GridTile]
+	func _init():
+		row = []
 
 class PlayerAction:
 	var _name: String;
@@ -75,11 +79,19 @@ func _input(event):
 				_enemy_information.toggle_in();
 			if (event.keycode == KEY_5):
 				_item_discard_select.toggle_in();
+			if (event.keycode == KEY_6):
+				var closest_viable_tile = get_closest_tile(debug_enemy.position).position;
+				var player_tile = get_closest_tile(player.position).position;
+				for tile in debug_enemy.viable_tiles: #remember to adjust player's position coordinate to the center of the sprite
+					if ((player_tile-tile).length() < (player_tile-closest_viable_tile).length()):
+						closest_viable_tile = tile;
+				debug_enemy.set_move_path(_tilemap.find_path(debug_enemy.position, closest_viable_tile));
 				
 	
 	if event is InputEventMouseButton:
 		if (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
-			_player.set_move_path(_tilemap.find_path(_player.position, _cursor.position));
+			if _player.get_tile_is_viable(_cursor.position):
+				_player.set_move_path(_tilemap.find_path(_player.position, _cursor.position));
 		elif (event.button_index == MOUSE_BUTTON_RIGHT and event.pressed):
 			_player.revert_move_path();
 		
@@ -91,9 +103,9 @@ func _ready() -> void:
 	var ygrid = floor(scene_dimensions.y/float(tile_size)+.99);
 	grid_map = []
 	for i in range(xgrid):
-		grid_map.append([]);
+		grid_map.append(GridMapRow.new());
 		for j in range(ygrid):
-			grid_map[i].append(GridTile.new(i*float(tile_size)+float(tile_size)/2.0, j*tile_size+tile_size/2.0));
+			grid_map[i].row.append(GridTile.new(i*float(tile_size)+float(tile_size)/2.0, j*tile_size+tile_size/2.0));
 			
 	#initialize player inventory
 	item_lookup = ItemLookup.new(_icon_lookup);
@@ -128,15 +140,23 @@ func _ready() -> void:
 	debug_enemy.get_occupied_tile_callback = get_occupied_tile;
 	
 func get_occupied_tile(unit: Unit) -> GridTile:
+	#this is a callback function
 	var occupied_tile = get_closest_tile(unit.position);
 	unit.position = occupied_tile.position;
 	occupied_tile.occupant = unit;
-	return occupied_tile;
 	
+	update_navmesh_with_unit_positions();
+	
+	return occupied_tile;
+
+func update_navmesh_with_unit_positions() -> void:
+	var unit_array: Array[Unit] = [player, debug_enemy];#should actually just be a list of all units
+	_tilemap.update_grid_from_unit_positions(unit_array, tile_size); 
+
 func get_closest_tile(pos: Vector2) -> GridTile:
 	var currx = clamp(floor(((pos.x-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map)-1);
-	var curry = clamp(floor(((pos.y-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map[currx])-1);
-	return grid_map[currx][curry];
+	var curry = clamp(floor(((pos.y-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map[currx].row)-1);
+	return grid_map[currx].row[curry];
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -149,18 +169,20 @@ func _process(_delta: float) -> void:
 		#recalculate viable tiles for the player
 		_player.viable_tiles.append(_player.position);
 		for i in grid_map:
-			for j in i:
-				_player.probe_tile(_tilemap.find_path(_player.position, j.position));
+			for j in i.row:
+				if j.occupant == null:
+					_player.probe_tile(_tilemap.find_path(_player.position, j.position));
 				
 	if (debug_enemy.moving == false and len(debug_enemy.viable_tiles) <= 0):
 		debug_enemy.viable_tiles.append(debug_enemy.position);
 		for i in grid_map:
-			for j in i:
-				debug_enemy.probe_tile(_tilemap.find_path(debug_enemy.position, j.position));
+			for j in i.row:
+				if j.occupant == null:
+					debug_enemy.probe_tile(_tilemap.find_path(debug_enemy.position, j.position));
 	queue_redraw()
 func _draw():
 	for i in grid_map:
-		for j in i:
+		for j in i.row:
 			var dx = j.position.x-tile_size/2.0;
 			var dy = j.position.y-tile_size/2.0;
 			draw_rect(Rect2(dx, dy, tile_size, tile_size), Color.DARK_GRAY, false);

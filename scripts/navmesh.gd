@@ -7,6 +7,11 @@ func _ready() -> void:
 	_init_grid()
 	_update_grid_from_tilemap()
 	
+func update_grid_from_unit_positions(unit_list: Array[Unit], tile_size: int):
+	_update_grid_from_tilemap();
+	for unit in unit_list:
+		astar_grid.set_point_solid(unit.position/tile_size, true);
+	
 func _init_grid() -> void:
 	astar_grid = AStarGrid2D.new()
 	astar_grid.size = get_used_rect().size
