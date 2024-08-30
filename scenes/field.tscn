@@ -1,19 +1,20 @@
-[gd_scene load_steps=39 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=41 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_b84jq"]
+[ext_resource type="Script" path="res://scripts/units/player_unit.gd" id="2_b84jq"]
 [ext_resource type="Texture2D" uid="uid://dqc1i7w583174" path="res://sprites/items/sword_0.png" id="2_dhy2t"]
 [ext_resource type="Texture2D" uid="uid://cievfbwa5vpxx" path="res://sprites/link/idle_down_0.png" id="2_eokx8"]
 [ext_resource type="Texture2D" uid="uid://niavs3vcr4v7" path="res://sprites/link/idle_down_1.png" id="3_3t8hf"]
 [ext_resource type="Script" path="res://scripts/navmesh.gd" id="3_wy4dh"]
 [ext_resource type="Script" path="res://scripts/enemy_sprite_lookup.gd" id="6_mkm2n"]
 [ext_resource type="Script" path="res://scripts/cursor.gd" id="6_o8kj8"]
-[ext_resource type="Texture2D" uid="uid://bc36w8qpduviw" path="res://sprites/enemies/bat/bat_0.png" id="7_7xcvo"]
+[ext_resource type="SpriteFrames" uid="uid://bbsj305xvrab5" path="res://sprites/enemies/bat/bat.tres" id="7_7hrmv"]
 [ext_resource type="Texture2D" uid="uid://cf68b732v5elh" path="res://sprites/cursor/cursor_0.png" id="7_eynp2"]
-[ext_resource type="Texture2D" uid="uid://bbqhcpgjsvlc0" path="res://sprites/enemies/skeleton/skeleton_0.png" id="8_jsfpa"]
+[ext_resource type="SpriteFrames" uid="uid://bnle6cf7ydnep" path="res://sprites/enemies/moblin/moblin.tres" id="8_ap3go"]
 [ext_resource type="Texture2D" uid="uid://byc6kfq88wedi" path="res://sprites/cursor/cursor_1.png" id="8_snccw"]
-[ext_resource type="Texture2D" uid="uid://cgsox2vqeic8a" path="res://sprites/enemies/moblin/moblin_0.png" id="9_08a22"]
+[ext_resource type="SpriteFrames" uid="uid://ce5ec23o3a1js" path="res://sprites/enemies/skeleton/skeleton.tres" id="9_ndt5g"]
+[ext_resource type="Script" path="res://scripts/units/enemy_unit.gd" id="10_1btod"]
 [ext_resource type="Script" path="res://scripts/icon_lookup.gd" id="11_7jtqx"]
 [ext_resource type="Texture2D" uid="uid://b2k0ltb37ihsh" path="res://sprites/items/bow_0.png" id="12_m3me3"]
 [ext_resource type="Texture2D" uid="uid://d12y12b7htadc" path="res://sprites/items/axe_0.png" id="13_v4six"]
@@ -34,6 +35,8 @@
 [ext_resource type="Script" path="res://scripts/ui_components/item_discard_select.gd" id="28_8r773"]
 [ext_resource type="Script" path="res://scripts/ui_components/submenu.gd" id="29_lpxx5"]
 [ext_resource type="Script" path="res://scripts/ui_components/dialog_box.gd" id="30_boefs"]
+
+[sub_resource type="Curve2D" id="Curve2D_fe8ym"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb7wn"]
 animations = [{
@@ -70,8 +73,10 @@ font_size = 8
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="GameManager" type="Node2D"]
+[node name="GameManager" type="Node2D" node_paths=PackedStringArray("debug_enemy", "player")]
 script = ExtResource("1_kjnsb")
+debug_enemy = NodePath("Scene/Enemy")
+player = NodePath("Scene/Player")
 
 [node name="Data" type="Node2D" parent="."]
 
@@ -81,9 +86,19 @@ item_icons = Array[Texture2D]([ExtResource("2_dhy2t"), ExtResource("12_m3me3"), 
 
 [node name="EnemySpriteLookup" type="Node2D" parent="Data"]
 script = ExtResource("6_mkm2n")
-enemy_sprites = Array[Texture2D]([ExtResource("7_7xcvo"), ExtResource("8_jsfpa"), ExtResource("9_08a22")])
+enemy_sprites = Array[SpriteFrames]([ExtResource("7_7hrmv"), ExtResource("8_ap3go"), ExtResource("9_ndt5g")])
 
 [node name="Scene" type="Node2D" parent="."]
+
+[node name="Enemy" type="CharacterBody2D" parent="Scene" node_paths=PackedStringArray("animated_sprite")]
+position = Vector2(256, 64)
+script = ExtResource("10_1btod")
+animated_sprite = NodePath("AnimatedSprite2D")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Scene/Enemy"]
+
+[node name="Path2D" type="Path2D" parent="Scene/Enemy"]
+curve = SubResource("Curve2D_fe8ym")
 
 [node name="TileMap" type="TileMapLayer" parent="Scene"]
 z_index = -1
@@ -91,9 +106,10 @@ tile_map_data = PackedByteArray("AAAAAAAAAAACAAEAAAAAAAEAAAACAAEAAAAAAAIAAAACAAE
 tile_set = ExtResource("1_lgq10")
 script = ExtResource("3_wy4dh")
 
-[node name="Player" type="CharacterBody2D" parent="Scene"]
+[node name="Player" type="CharacterBody2D" parent="Scene" node_paths=PackedStringArray("animated_sprite")]
 position = Vector2(232, 152)
 script = ExtResource("2_b84jq")
+animated_sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Scene/Player"]
 sprite_frames = SubResource("SpriteFrames_eb7wn")

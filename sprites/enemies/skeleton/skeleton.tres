@@ -1,0 +1,14 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3 uid="uid://ce5ec23o3a1js"]
+
+[ext_resource type="Texture2D" uid="uid://bbqhcpgjsvlc0" path="res://sprites/enemies/skeleton/skeleton_0.png" id="1_quppt"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_quppt")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

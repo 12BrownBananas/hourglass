@@ -1,0 +1,19 @@
+[gd_resource type="SpriteFrames" load_steps=3 format=3 uid="uid://bbsj305xvrab5"]
+
+[ext_resource type="Texture2D" uid="uid://bc36w8qpduviw" path="res://sprites/enemies/bat/bat_0.png" id="1_agel7"]
+[ext_resource type="Texture2D" uid="uid://b55ywots5ea3c" path="res://sprites/enemies/bat/bat_1.png" id="2_t66yj"]
+
+[resource]
+resource_name = "bat_idle"
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_agel7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_t66yj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

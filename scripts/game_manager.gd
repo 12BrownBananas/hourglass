@@ -2,6 +2,9 @@ extends Node2D
 
 class_name GameManager;
 
+@export var debug_enemy: EnemyUnit;
+@export var player: PlayerUnit;
+
 #data components
 @onready var _icon_lookup = $Data/IconLookup;
 @onready var _enemy_sprite_lookup = $Data/EnemySpriteLookup;
@@ -37,16 +40,18 @@ class PlayerAction:
 
 class GridTile:
 	var position;
+	var occupant: Unit;
 	func _init(x: float, y: float):
 		position = Vector2(x, y);
+		occupant = null;
 
 func wait_callback():
 	print("Wait pressed");
 
 func _input(event):
-	var closestTile = get_closest_tile(get_viewport().get_mouse_position());
-	_cursor.position.x = closestTile.position.x;
-	_cursor.position.y = closestTile.position.y;
+	var closest_tile = get_closest_tile(get_viewport().get_mouse_position());
+	_cursor.position.x = closest_tile.position.x;
+	_cursor.position.y = closest_tile.position.y;
 	
 	if event is InputEventKey:
 		if (event.pressed):
@@ -107,6 +112,27 @@ func _ready() -> void:
 	var test_new = item_lookup.get_item(1);
 	_item_discard_select.populate(_player.inventory.items, test_new);
 	
+	debug_enemy.set_description(enemy_lookup.get_enemy(0));
+	
+	#position player and enemy
+	player.get_occupied_tile_callback = get_occupied_tile;
+	var player_tile = get_closest_tile(player.position);
+	player.position = player_tile.position;
+	player.occupied_tile = player_tile;
+	player_tile.occupant = player;
+	
+	var enemy_tile = get_closest_tile(debug_enemy.position);
+	debug_enemy.position = enemy_tile.position;
+	enemy_tile.occupant = debug_enemy;
+	debug_enemy.occupied_tile = enemy_tile;
+	debug_enemy.get_occupied_tile_callback = get_occupied_tile;
+	
+func get_occupied_tile(unit: Unit) -> GridTile:
+	var occupied_tile = get_closest_tile(unit.position);
+	unit.position = occupied_tile.position;
+	occupied_tile.occupant = unit;
+	return occupied_tile;
+	
 func get_closest_tile(pos: Vector2) -> GridTile:
 	var currx = clamp(floor(((pos.x-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map)-1);
 	var curry = clamp(floor(((pos.y-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map[currx])-1);
@@ -125,6 +151,12 @@ func _process(_delta: float) -> void:
 		for i in grid_map:
 			for j in i:
 				_player.probe_tile(_tilemap.find_path(_player.position, j.position));
+				
+	if (debug_enemy.moving == false and len(debug_enemy.viable_tiles) <= 0):
+		debug_enemy.viable_tiles.append(debug_enemy.position);
+		for i in grid_map:
+			for j in i:
+				debug_enemy.probe_tile(_tilemap.find_path(debug_enemy.position, j.position));
 	queue_redraw()
 func _draw():
 	for i in grid_map:
@@ -137,5 +169,12 @@ func _draw():
 			var dx = i.x-tile_size/2.0;
 			var dy = i.y-tile_size/2.0;
 			draw_rect(Rect2(dx, dy, tile_size, tile_size), Color(0.0, 0.0, 1.0, 0.25), true);
+	if (!debug_enemy.moving):
+		var closest_tile = get_closest_tile(get_viewport().get_mouse_position());
+		if (debug_enemy.occupied_tile == closest_tile):
+			for i in debug_enemy.viable_tiles:
+				var dx = i.x-tile_size/2.0;
+				var dy = i.y-tile_size/2.0;
+				draw_rect(Rect2(dx, dy, tile_size, tile_size), Color(1.0, 0.0, 0.0, 0.25), true);
 	#var item = _player.inventory.get_item(0)
 	#draw_texture(item._appearance._sprite, _player.position+Vector2(0.0, -12.0));

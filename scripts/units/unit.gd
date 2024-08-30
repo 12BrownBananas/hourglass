@@ -1,7 +1,10 @@
-extends CharacterBody2D
+extends CharacterBody2D;
+class_name Unit;
 
-@onready var _animated_sprite = $AnimatedSprite2D
+@export var animated_sprite: AnimatedSprite2D;
 
+var occupied_tile: GameManager.GridTile;
+var get_occupied_tile_callback: Callable;
 var move_target: Vector2;
 var spd: float = 400.0;
 var path: Array[Vector2];
@@ -20,8 +23,14 @@ func _ready():
 	max_distance = 128;
 	inventory = Inventory.new();
 
+func preprocess_routine() -> void:
+	animated_sprite.play("default"); #override this, if you want to do more than the base processing routine
+
+func postprocess_routine() -> void:
+	pass #override this, if you want to do more than the base processing routine
+
 func _process(_delta):
-	_animated_sprite.play("default");
+	preprocess_routine();
 	if (moving):
 		if (position.x != move_target.x or position.y != move_target.y):
 			if (abs(position.distance_to(move_target)) > spd*_delta):
@@ -31,9 +40,11 @@ func _process(_delta):
 				position = move_target;
 		elif len(path) > 0:
 			if (path_index >= path.size()-1):
+				occupied_tile = get_occupied_tile_callback.call(self);
 				moving = false;
 			path_index = min(path_index+1, path.size()-1);
 			move_target = path[path_index];
+	postprocess_routine();
 
 func validate_path(move_path: Array[Vector2]):
 	var dist = 0;
@@ -60,10 +71,16 @@ func get_tile_is_viable(tile: Vector2) -> bool:
 			return true;
 	return false;
 
+func clear_occupied_tile():
+	if (occupied_tile != null):
+		occupied_tile.occupant = null;
+	occupied_tile = null;
+
 func set_move_path(move_path: Array[Vector2]):
 	if (moving or len(move_path) <= 0):
 		return;
 	if (validate_path(move_path)):
+		clear_occupied_tile();
 		viable_tiles.clear(); #we're moving now, so we need to reset our viable tiles
 		path = move_path.duplicate();
 		path_index = 0;
@@ -72,11 +89,3 @@ func set_move_path(move_path: Array[Vector2]):
 
 func get_move_path() -> Array[Vector2]:
 	return path.duplicate();
-
-func revert_move_path() -> void:
-	if len(path) > 0:
-		viable_tiles.clear(); #we're moving now, so we need to reset our viable tiles
-		path_index = 0;
-		move_target = path[path_index];
-		position = move_target;
-		moving = false;

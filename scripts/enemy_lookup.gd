@@ -23,8 +23,8 @@ class EnemyStats:
 		return EnemyStats.new(hp, movement);
 
 class EnemyAppearance:
-	var _sprite: Texture2D;
-	func _init(sprite: Texture2D):
+	var _sprite: SpriteFrames;
+	func _init(sprite: SpriteFrames):
 		_sprite = sprite;
 	func duplicate() -> EnemyAppearance:
 		return EnemyAppearance.new(_sprite);
