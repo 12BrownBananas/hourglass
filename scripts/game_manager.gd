@@ -3,13 +3,14 @@ extends Node2D
 class_name GameManager;
 
 #data components
-@onready var _icon_lookup = $Data/IconLookup; 
+@onready var _icon_lookup = $Data/IconLookup;
+@onready var _enemy_sprite_lookup = $Data/EnemySpriteLookup;
 #scene components
 @onready var _player = $Scene/Player;
 @onready var _tilemap = $Scene/TileMap;
 @onready var _cursor = $Scene/Cursor;
 @onready var _path_forecast = $Scene/PathForecast;
-@onready var _hud = $Scene/HUD;
+#@onready var _hud = $Scene/HUD;
 @onready var _item_select = $Scene/HUD/ItemSelect;
 @onready var _item_discard_select = $Scene/HUD/ItemDiscardSelect;
 @onready var _action_select = $Scene/HUD/ActionSelect;
@@ -17,6 +18,7 @@ class_name GameManager;
 @onready var _enemy_information = $Scene/HUD/EnemyInformation;
 
 var item_lookup: ItemLookup;
+var enemy_lookup: EnemyLookup;
 const scene_dimensions = Vector2i(480, 270);
 const tile_size = 16;
 var grid_size;
@@ -80,13 +82,13 @@ func _input(event):
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	#initialize grid
-	var xgrid = floor(scene_dimensions.x/tile_size+.99);
-	var ygrid = floor(scene_dimensions.y/tile_size+.99);
+	var xgrid = floor(scene_dimensions.x/float(tile_size)+.99);
+	var ygrid = floor(scene_dimensions.y/float(tile_size)+.99);
 	grid_map = []
 	for i in range(xgrid):
 		grid_map.append([]);
 		for j in range(ygrid):
-			grid_map[i].append(GridTile.new(i*tile_size+tile_size/2, j*tile_size+tile_size/2));
+			grid_map[i].append(GridTile.new(i*float(tile_size)+float(tile_size)/2.0, j*tile_size+tile_size/2.0));
 			
 	#initialize player inventory
 	item_lookup = ItemLookup.new(_icon_lookup);
@@ -97,18 +99,21 @@ func _ready() -> void:
 	init_list.append(item_lookup.get_item(1));
 	_player.inventory.add_items(init_list);
 	
+	#initialize enemy compendium
+	enemy_lookup = EnemyLookup.new(_enemy_sprite_lookup);
+	
 	#test synchronizing player inventory with item select box
 	_item_select.add_items(_player.inventory.items);
 	var test_new = item_lookup.get_item(1);
 	_item_discard_select.populate(_player.inventory.items, test_new);
 	
-func get_closest_tile(position: Vector2) -> GridTile:
-	var currx = clamp(floor(((position.x-tile_size/2)/tile_size)+0.5), 0.0, len(grid_map)-1);
-	var curry = clamp(floor(((position.y-tile_size/2)/tile_size)+0.5), 0.0, len(grid_map[currx])-1);
+func get_closest_tile(pos: Vector2) -> GridTile:
+	var currx = clamp(floor(((pos.x-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map)-1);
+	var curry = clamp(floor(((pos.y-tile_size/2.0)/tile_size)+0.5), 0.0, len(grid_map[currx])-1);
 	return grid_map[currx][curry];
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if (_player.get_tile_is_viable(_cursor.position)):
 		_path_forecast.points = PackedVector2Array(_tilemap.find_path(_player.position, _cursor.position));
 	else:
@@ -124,13 +129,13 @@ func _process(delta: float) -> void:
 func _draw():
 	for i in grid_map:
 		for j in i:
-			var dx = j.position.x-tile_size/2;
-			var dy = j.position.y-tile_size/2;
+			var dx = j.position.x-tile_size/2.0;
+			var dy = j.position.y-tile_size/2.0;
 			draw_rect(Rect2(dx, dy, tile_size, tile_size), Color.DARK_GRAY, false);
 	if (!_player.moving):
 		for i in _player.viable_tiles:
-			var dx = i.x-tile_size/2;
-			var dy = i.y-tile_size/2;
+			var dx = i.x-tile_size/2.0;
+			var dy = i.y-tile_size/2.0;
 			draw_rect(Rect2(dx, dy, tile_size, tile_size), Color(0.0, 0.0, 1.0, 0.25), true);
 	#var item = _player.inventory.get_item(0)
 	#draw_texture(item._appearance._sprite, _player.position+Vector2(0.0, -12.0));

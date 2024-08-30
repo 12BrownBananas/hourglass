@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=39 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
@@ -7,9 +7,13 @@
 [ext_resource type="Texture2D" uid="uid://cievfbwa5vpxx" path="res://sprites/link/idle_down_0.png" id="2_eokx8"]
 [ext_resource type="Texture2D" uid="uid://niavs3vcr4v7" path="res://sprites/link/idle_down_1.png" id="3_3t8hf"]
 [ext_resource type="Script" path="res://scripts/navmesh.gd" id="3_wy4dh"]
+[ext_resource type="Script" path="res://scripts/enemy_sprite_lookup.gd" id="6_mkm2n"]
 [ext_resource type="Script" path="res://scripts/cursor.gd" id="6_o8kj8"]
+[ext_resource type="Texture2D" uid="uid://bc36w8qpduviw" path="res://sprites/enemies/bat/bat_0.png" id="7_7xcvo"]
 [ext_resource type="Texture2D" uid="uid://cf68b732v5elh" path="res://sprites/cursor/cursor_0.png" id="7_eynp2"]
+[ext_resource type="Texture2D" uid="uid://bbqhcpgjsvlc0" path="res://sprites/enemies/skeleton/skeleton_0.png" id="8_jsfpa"]
 [ext_resource type="Texture2D" uid="uid://byc6kfq88wedi" path="res://sprites/cursor/cursor_1.png" id="8_snccw"]
+[ext_resource type="Texture2D" uid="uid://cgsox2vqeic8a" path="res://sprites/enemies/moblin/moblin_0.png" id="9_08a22"]
 [ext_resource type="Script" path="res://scripts/icon_lookup.gd" id="11_7jtqx"]
 [ext_resource type="Texture2D" uid="uid://b2k0ltb37ihsh" path="res://sprites/items/bow_0.png" id="12_m3me3"]
 [ext_resource type="Texture2D" uid="uid://d12y12b7htadc" path="res://sprites/items/axe_0.png" id="13_v4six"]
@@ -66,7 +70,7 @@ font_size = 8
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Node2D" type="Node2D"]
+[node name="GameManager" type="Node2D"]
 script = ExtResource("1_kjnsb")
 
 [node name="Data" type="Node2D" parent="."]
@@ -74,6 +78,10 @@ script = ExtResource("1_kjnsb")
 [node name="IconLookup" type="Node2D" parent="Data"]
 script = ExtResource("11_7jtqx")
 item_icons = Array[Texture2D]([ExtResource("2_dhy2t"), ExtResource("12_m3me3"), ExtResource("13_v4six")])
+
+[node name="EnemySpriteLookup" type="Node2D" parent="Data"]
+script = ExtResource("6_mkm2n")
+enemy_sprites = Array[Texture2D]([ExtResource("7_7xcvo"), ExtResource("8_jsfpa"), ExtResource("9_08a22")])
 
 [node name="Scene" type="Node2D" parent="."]
 
