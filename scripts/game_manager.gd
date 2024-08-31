@@ -83,8 +83,13 @@ func _input(event):
 				var closest_viable_tile = get_closest_tile(debug_enemy.position).position;
 				var player_tile = get_closest_tile(player.position).position;
 				for tile in debug_enemy.viable_tiles: #remember to adjust player's position coordinate to the center of the sprite
-					if ((player_tile-tile).length() < (player_tile-closest_viable_tile).length()):
+					var dist_vector = (player_tile-tile);
+					var prev_vector = (player_tile-closest_viable_tile);
+					if (dist_vector.length() < prev_vector.length()):
 						closest_viable_tile = tile;
+					elif (dist_vector.length() == prev_vector.length()):
+						if (debug_enemy.position-tile).length() < (debug_enemy.position-closest_viable_tile).length():
+							closest_viable_tile = tile;
 				debug_enemy.set_move_path(_tilemap.find_path(debug_enemy.position, closest_viable_tile));
 				
 	
@@ -146,6 +151,10 @@ func get_occupied_tile(unit: Unit) -> GridTile:
 	occupied_tile.occupant = unit;
 	
 	update_navmesh_with_unit_positions();
+	
+	#note that it's probably more efficient to do this just before a move
+	_player.viable_tiles.clear();
+	debug_enemy.viable_tiles.clear();
 	
 	return occupied_tile;
 
