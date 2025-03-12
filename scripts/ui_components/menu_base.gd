@@ -16,6 +16,12 @@ func toggle_in() -> void:
 	destination = out_position if in_view else in_position;
 	in_view = !in_view;
 	additional_toggle_processing()
+func force_out() -> void:
+	destination = out_position;
+	in_view = false;
+func force_in() -> void:
+	destination = in_position;
+	in_view = true;
 	
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -23,8 +29,6 @@ func _ready() -> void:
 
 func update_position(_delta: float):
 	position += (destination-position)*lerp_factor;
-	if (abs(destination-position) < Vector2(0.01, 0.01)):
-		destination = position;
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:

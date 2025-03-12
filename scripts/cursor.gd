@@ -4,3 +4,5 @@ extends CharacterBody2D
 
 func _process(_delta):
 	_animated_sprite.play("default");
+func set_cursor_visible(visible_status: bool):
+	_animated_sprite.visible = visible_status

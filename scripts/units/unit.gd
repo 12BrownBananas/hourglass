@@ -4,19 +4,22 @@ class_name Unit;
 @export var animated_sprite: AnimatedSprite2D;
 
 var occupied_tile: GameManager.GridTile;
-var get_occupied_tile_callback: Callable;
+var set_occupied_tile_callback: Callable;
+var path_complete_callback: Callable;
 var move_target: Vector2;
 var spd: float = 400.0;
 var path: Array[Vector2];
 var viable_tiles: Array[Vector2];
 var path_index: int;
 var moving: bool;
+var can_move: bool;
 var max_distance: int; #in units, not tiles (but rounds down to tiles)
 var inventory: Inventory;
 
 func _ready():
 	path_index = 0;
 	moving = false;
+	can_move = true;
 	path = [];
 	viable_tiles = [];
 	move_target = Vector2(position.x, position.y);
@@ -40,8 +43,10 @@ func _process(_delta):
 				position = move_target;
 		elif len(path) > 0:
 			if (path_index >= path.size()-1):
-				occupied_tile = get_occupied_tile_callback.call(self);
+				occupied_tile = set_occupied_tile_callback.call(self);
 				moving = false;
+				#path is now complete, so we can advance to the next "stage" in our turn.
+				path_complete_callback.call(self);
 			path_index = min(path_index+1, path.size()-1);
 			move_target = path[path_index];
 	postprocess_routine();
@@ -85,7 +90,14 @@ func set_move_path(move_path: Array[Vector2]):
 		path = move_path.duplicate();
 		path_index = 0;
 		moving = true;
+		can_move = false;
 		move_target = path[path_index];
 
 func get_move_path() -> Array[Vector2]:
 	return path.duplicate();
+	
+func check_viability_at_range(distance_to_target: int) -> bool:
+	for item in inventory.items:
+		if (item.check_viable_range(distance_to_target)):
+			return true;
+	return false

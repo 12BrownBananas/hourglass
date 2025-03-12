@@ -16,6 +16,11 @@ class Item:
 		_effects = effects;
 	func get_name():
 		return _name;
+	func check_viable_range(range: int):
+		for r in _stats._ranges:
+			if (range == r):
+				return true;
+		return false;
 	func duplicate() -> Item:
 		var effectsCopy: Array[ItemEffect] = []
 		for i in _effects:
