@@ -19,6 +19,7 @@ var highlighted_enemy: EnemyUnit = null;
 @onready var _item_discard_select = $Scene/HUD/ItemDiscardSelect;
 @onready var _action_select = $Scene/HUD/ActionSelect;
 @onready var _engagement_forecast = $Scene/HUD/EngagementForecast;
+@onready var _execute_button = $Scene/HUD/ExecuteButton;
 @onready var _target_select = $Scene/HUD/TargetSelect;
 @onready var _enemy_information = $Scene/HUD/EnemyInformation;
 
@@ -77,14 +78,18 @@ func _revert_open_target_select():
 
 func open_engagement_forecast(target: EnemyUnit):
 	_engagement_forecast.force_in();
+	_target_select.force_out();
 	target_select_mode = false;
 	locked_on = true;
+	_execute_button.force_in();
 	action_stack.push_front(_revert_open_engagement_forecast);
 
 func _revert_open_engagement_forecast():
 	_engagement_forecast.force_out();
 	locked_on = false;
 	target_select_mode = true;
+	_target_select.force_in();
+	_execute_button.force_out();
 
 func open_action_select_menu(unit: Unit):
 	_action_select.clear_actions();
@@ -188,6 +193,11 @@ func _undo_previous_action():
 		return;
 	action_stack.pop_front().call();
 
+func execute_button_callback():
+	print("Execute button pressed");
+func back_button_callback():
+	_undo_previous_action();
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	#initialize grid
@@ -231,6 +241,11 @@ func _ready() -> void:
 	enemy_tile.occupant = debug_enemy;
 	debug_enemy.occupied_tile = enemy_tile;
 	debug_enemy.set_occupied_tile_callback = set_occupied_tile;
+	
+	_execute_button.execute.set_action(PlayerAction.new("Execute", Callable(self, "execute_button_callback")));
+	_execute_button.execute.pressed.connect(_execute_button.execute.on_pressed);
+	_execute_button.back.set_action(PlayerAction.new("Back", Callable(self, "back_button_callback")));
+	_execute_button.back.pressed.connect(_execute_button.back.on_pressed);
 	
 func set_occupied_tile(unit: Unit) -> GridTile:
 	#this is a callback function

@@ -6,6 +6,7 @@ class_name EngagementForecast;
 @export var drop_area: Control;
 @export var drop_button: Button;
 @export var item_info: HoverInfo;
+@export var weapon_select: Button;
 @export_enum("Left", "Right") var info_alignment = 0;
 
 var item_info_pad_value = 4.0;
