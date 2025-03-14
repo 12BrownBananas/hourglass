@@ -72,7 +72,6 @@ class CombatAnimation extends Node2D:
 	var lunge_vector: Vector2;
 	var lunge_init: Vector2;
 	func _init(_lifetime: float, _conclusion: Callable, _source: Unit, _target: Unit):
-		print("Combat animation initialized.");
 		lifetime = _lifetime;
 		conclude_action = _conclusion;
 		source = _source;
@@ -94,8 +93,7 @@ class CombatAnimation extends Node2D:
 					if (abs(source.animated_sprite.position-lunge_target) <= abs(lunge_vector*2.0)):
 						#we'll consider this a point-of-impact
 						animation_stage = animation_stage+1;
-						print("target should flash and shake here");
-						#trigger flash and shake on target
+						target.trigger_flash_and_shake();
 				1:
 					#draw back from target
 					source.animated_sprite.position = source.animated_sprite.position-lunge_vector;
@@ -255,8 +253,16 @@ func execute_button_callback():
 	has_control = false;
 	add_child(CombatAnimation.new(1.0, post_attack_callback, _player, highlighted_enemy));	
 	
+func begin_new_action_selection():
+	action_stack.clear();
+	has_control = true;
+	locked_on = false;
+	target_select_mode = false;
+	_player.can_move = true;
+
 func post_attack_callback():
-	print("Post-attack callback.");
+	#we'll just throw control back to the player
+	begin_new_action_selection();
 func back_button_callback():
 	_undo_previous_action();
 

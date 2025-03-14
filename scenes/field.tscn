@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=4 uid="uid://cpm8pbh3jw87f"]
+[gd_scene load_steps=47 format=4 uid="uid://cpm8pbh3jw87f"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_kjnsb"]
 [ext_resource type="TileSet" uid="uid://0kijbdibwx17" path="res://tiles/new_tile_set.tres" id="1_lgq10"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://scripts/icon_lookup.gd" id="11_7jtqx"]
 [ext_resource type="Texture2D" uid="uid://b2k0ltb37ihsh" path="res://sprites/items/bow_0.png" id="12_m3me3"]
 [ext_resource type="Texture2D" uid="uid://d12y12b7htadc" path="res://sprites/items/axe_0.png" id="13_v4six"]
+[ext_resource type="Shader" path="res://shaders/unit.gdshader" id="14_8lv6u"]
 [ext_resource type="Script" path="res://scripts/ui_controller.gd" id="14_u3ryo"]
 [ext_resource type="Script" path="res://scripts/ui_components/action_select.gd" id="15_4yt7t"]
 [ext_resource type="Script" path="res://scripts/ui_components/hourglass.gd" id="15_jb7sx"]
@@ -39,7 +40,15 @@
 [ext_resource type="Script" path="res://scenes/ui_components/execute_button.gd" id="37_ixnif"]
 [ext_resource type="Script" path="res://scripts/ui_components/action_select_button.gd" id="38_sl8hu"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5h6sw"]
+shader = ExtResource("14_8lv6u")
+shader_parameter/flash_intensity = 0.0
+
 [sub_resource type="Curve2D" id="Curve2D_fe8ym"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bn2a7"]
+shader = ExtResource("14_8lv6u")
+shader_parameter/flash_intensity = 0.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_eb7wn"]
 animations = [{
@@ -99,6 +108,7 @@ script = ExtResource("10_1btod")
 animated_sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Scene/Enemy"]
+material = SubResource("ShaderMaterial_5h6sw")
 
 [node name="Path2D" type="Path2D" parent="Scene/Enemy"]
 curve = SubResource("Curve2D_fe8ym")
@@ -115,6 +125,7 @@ script = ExtResource("2_b84jq")
 animated_sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Scene/Player"]
+material = SubResource("ShaderMaterial_bn2a7")
 sprite_frames = SubResource("SpriteFrames_eb7wn")
 frame = 1
 frame_progress = 0.936833

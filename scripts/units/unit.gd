@@ -19,6 +19,70 @@ var can_move: bool;
 var max_distance: int; #in units, not tiles (but rounds down to tiles)
 var inventory: Inventory;
 
+class FlashEffect extends Node2D:
+	var intensity: float = 1.0;
+	var flash_timer: float = 0.0;
+	var flash_duration: float = 0.05;
+	var timer: float = 0.0;
+	var lifetime: float = 0.3;
+	var conclude_event: Callable;
+	func _init(_conclude_event: Callable):
+		conclude_event = _conclude_event;
+	func _process(_delta: float):
+		flash_timer+=_delta;
+		timer+=_delta;
+		if (flash_timer >= flash_duration):
+			flash_timer-=flash_duration;
+			if (intensity == 0.0):
+				intensity = 1.0;
+			else:
+				intensity = 0.0;
+		if (timer >= lifetime):
+			conclude_event.call();
+			call_deferred("free");
+
+class ShakeEffect extends Node2D:
+	var offset: Vector2;
+	var timer: float;
+	var duration: float;
+	var intensity: float;
+	var conclude_event: Callable;
+	var direction: float = 0.0;
+	var destination: Vector2;
+	var shake_rate: float = 2.0; #2 frames per shake destination
+	var wait: bool = false;
+	var shake_spd: Vector2;
+	func _init(_shake_intensity: float, _shake_duration: float, _conclude_event: Callable):
+		intensity = _shake_intensity;
+		duration = _shake_duration;
+		conclude_event = _conclude_event;
+		timer = 0.0;
+		offset = Vector2(0.0, 0.0);
+		direction = 359.9*randf();
+		destination = Vector2(intensity*cos(deg_to_rad(direction)), intensity*sin(deg_to_rad(direction)));
+		shake_spd = (destination-offset)/shake_rate;
+		wait = true;
+	func _process(_delta: float):
+		timer += _delta;
+		var percent_complete = 1.0-(timer/duration);
+		if (wait):
+			offset += shake_spd;
+			if (abs(offset-destination) < abs(shake_spd)):
+				direction -= 180.0;
+				direction += 90.0*(randf()-0.5);
+				if (direction < 0):
+					direction+=360.0;
+				if (direction > 360.0):
+					direction-=360.0;
+				destination = Vector2(intensity*percent_complete*cos(deg_to_rad(direction)), intensity*percent_complete*sin(deg_to_rad(direction)));
+				shake_spd = (destination-offset)/shake_rate;
+		if (timer >= duration):
+			conclude_event.call();
+			call_deferred("free");
+
+var shake_effect: ShakeEffect;
+var flash_effect: FlashEffect;
+
 func _ready():
 	path_index = 0;
 	moving = false;
@@ -43,6 +107,14 @@ func equip_item(item_index: int):
 func preprocess_routine() -> void:
 	animated_sprite.play("default"); #override this, if you want to do more than the base processing routine
 
+func process_effects() -> void:
+	if (flash_effect != null):
+		animated_sprite.material.set_shader_parameter("flash_intensity", flash_effect.intensity);
+	
+	if (shake_effect != null):
+		animated_sprite.position.x = shake_effect.offset.x;
+		animated_sprite.position.y = shake_effect.offset.y;
+
 func postprocess_routine() -> void:
 	pass #override this, if you want to do more than the base processing routine
 
@@ -63,6 +135,8 @@ func _process(_delta):
 				path_complete_callback.call(self);
 			path_index = min(path_index+1, path.size()-1);
 			move_target = path[path_index];
+	
+	process_effects();
 	postprocess_routine();
 
 func validate_path(move_path: Array[Vector2]):
@@ -139,3 +213,16 @@ func calculate_crit_chance(target: Unit) -> int:
 	
 func calculate_number_of_attacks(target: Unit) -> int:
 	return 1; #simple for now
+
+func unregister_flash_effect() -> void:
+	animated_sprite.material.set_shader_parameter("flash_intensity", 0.0);
+	flash_effect = null;
+func unregister_shake_effect() -> void:
+	animated_sprite.position.x = 0.0;
+	animated_sprite.position.y = 0.0;
+	shake_effect = null;
+func trigger_flash_and_shake() -> void:
+	flash_effect = FlashEffect.new(unregister_flash_effect);
+	add_child(flash_effect);
+	shake_effect = ShakeEffect.new(5.0, 0.5, unregister_shake_effect);
+	add_child(shake_effect);
