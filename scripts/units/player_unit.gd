@@ -8,6 +8,6 @@ func revert_move_path() -> void:
 		path_index = 0;
 		move_target = path[path_index];
 		position = move_target;
-		moving = false;
-		can_move = true;
-		occupied_tile = set_occupied_tile_callback.call(self);
+	moving = false;
+	can_move = true;
+	occupied_tile = set_occupied_tile_callback.call(self);

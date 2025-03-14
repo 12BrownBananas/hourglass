@@ -61,7 +61,7 @@ class GridTile:
 
 class CombatAnimation extends Node2D:
 	var conclude_action: Callable;
-	var lifetime: float;
+	const lifetime: float = 1.0; #total animation duration
 	var time: float;
 	var source: Unit;
 	var target: Unit;
@@ -71,12 +71,11 @@ class CombatAnimation extends Node2D:
 	var lunge_target: Vector2;
 	var lunge_vector: Vector2;
 	var lunge_init: Vector2;
-	func _init(_lifetime: float, _conclusion: Callable, _source: Unit, _target: Unit):
-		lifetime = _lifetime;
+	func _init(_conclusion: Callable, _source: Unit, _target: Unit):
 		conclude_action = _conclusion;
 		source = _source;
 		target = _target;
-		startup_delay = _lifetime/5.0; #1/5th of the total animation length
+		startup_delay = lifetime/5.0; #1/5th of the total animation length
 		triggered = false;
 		animation_stage = 0;
 		
@@ -228,9 +227,9 @@ func _input(event):
 		if (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
 			if (!target_select_mode):
 				if _player.get_tile_is_viable(_cursor.position):
-					_player.set_move_path(_tilemap.find_path(_player.position, _cursor.position));
 					_cursor.set_cursor_visible(false);
 					action_stack.push_front(_revert_player_move_path);
+					_player.set_move_path(_tilemap.find_path(_player.position, _cursor.position));
 			else:
 				if (highlighted_enemy != null):
 					_enemy_information.force_out();
@@ -251,7 +250,7 @@ func execute_button_callback():
 	_engagement_forecast.force_out();
 	_execute_button.force_out();
 	has_control = false;
-	add_child(CombatAnimation.new(1.0, post_attack_callback, _player, highlighted_enemy));	
+	add_child(CombatAnimation.new(post_attack_callback, _player, highlighted_enemy));	
 	
 func begin_new_action_selection():
 	action_stack.clear();
@@ -363,7 +362,7 @@ func _process(_delta: float) -> void:
 		_player.viable_tiles.append(_player.position);
 		for i in grid_map:
 			for j in i.row:
-				if j.occupant == null:
+				if j.occupant == null || j.occupant == _player:
 					_player.probe_tile(_tilemap.find_path(_player.position, j.position));
 				
 	if (debug_enemy.moving == false and len(debug_enemy.viable_tiles) <= 0):

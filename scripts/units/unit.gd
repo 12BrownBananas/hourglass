@@ -171,6 +171,12 @@ func clear_occupied_tile():
 
 func set_move_path(move_path: Array[Vector2]):
 	if (moving or len(move_path) <= 0):
+		if (len(move_path) <= 0):
+			viable_tiles.clear();
+			can_move = false;
+			path = move_path.duplicate();
+			path_complete_callback.call(self);
+			move_target = position;
 		return;
 	if (validate_path(move_path)):
 		clear_occupied_tile();
