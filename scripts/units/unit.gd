@@ -3,6 +3,9 @@ class_name Unit;
 
 @export var animated_sprite: AnimatedSprite2D;
 
+var hp: int;
+var max_hp: int;
+var equipped_item: ItemLookup.Item;
 var occupied_tile: GameManager.GridTile;
 var set_occupied_tile_callback: Callable;
 var path_complete_callback: Callable;
@@ -25,6 +28,17 @@ func _ready():
 	move_target = Vector2(position.x, position.y);
 	max_distance = 128;
 	inventory = Inventory.new();
+	
+func add_item(item: ItemLookup.Item) -> void:
+	if (inventory.items.size() <= 0):
+		equipped_item = item;
+	inventory.add_items([item]);
+func add_items(items: Array[ItemLookup.Item]):
+	if (inventory.items.size() <= 0 && items.size() > 0):
+		equipped_item = items[0];
+	inventory.add_items(items);
+func equip_item(item_index: int):
+	equipped_item = inventory.get_item(item_index);
 
 func preprocess_routine() -> void:
 	animated_sprite.play("default"); #override this, if you want to do more than the base processing routine
@@ -101,3 +115,27 @@ func check_viability_at_range(distance_to_target: int) -> bool:
 		if (item.check_viable_range(distance_to_target)):
 			return true;
 	return false
+
+func calculate_damage(target: Unit) -> int:
+	if (equipped_item == null):
+		return 0;
+	var base_dmg = equipped_item.get_power();
+	#for now, this is enough-- we're doing flat damage
+	return base_dmg;
+
+func calculate_hit_chance(target: Unit) -> int:
+	if (equipped_item == null):
+		return 0;
+	var base_hit_chance = equipped_item.get_accuracy();
+	#for now, this is enough-- no fancy hit chance calculations (yet)!
+	return base_hit_chance;
+
+func calculate_crit_chance(target: Unit) -> int:
+	if (equipped_item == null):
+		return 0;
+	var base_crit_chance = equipped_item.get_crit_chance();
+	#for now, this is enough-- we'll save adding modifiers to crit chance for later
+	return base_crit_chance;
+	
+func calculate_number_of_attacks(target: Unit) -> int:
+	return 1; #simple for now

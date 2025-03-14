@@ -31,9 +31,9 @@ class EnemyAppearance:
 
 var lookup: Array[Enemy];
 
-func _init(sprite_lookup: EnemySpriteLookup):
+func _init(sprite_lookup: EnemySpriteLookup, tile_size: int):
 	lookup = []
-	lookup.append(Enemy.new("Keese", EnemyStats.new(3, 5), EnemyAppearance.new(sprite_lookup.enemy_sprites[0])));
+	lookup.append(Enemy.new("Keese", EnemyStats.new(3, 5*tile_size), EnemyAppearance.new(sprite_lookup.enemy_sprites[0])));
 
 func get_enemy(enemy_index: int) -> Enemy:
 	if (enemy_index < 0 or enemy_index > len(lookup)-1):

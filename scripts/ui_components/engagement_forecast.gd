@@ -11,6 +11,22 @@ class_name EngagementForecast;
 
 var item_info_pad_value = 4.0;
 
+class EngagementInfo:
+	var hp: int;
+	var max_hp: int;
+	var dmg: int;
+	var hit_chance: int;
+	var crit_chance: int;
+	var number_of_attacks: int;
+	func _init(source: Unit, target: Unit):
+		hp = source.hp;
+		max_hp = source.max_hp;
+		dmg = source.calculate_damage(target);
+		hit_chance = source.calculate_hit_chance(target);
+		crit_chance = source.calculate_crit_chance(target);
+		number_of_attacks = source.calculate_number_of_attacks(target);
+	
+
 func _ready() -> void:
 	destination = out_position;
 	
@@ -28,3 +44,7 @@ func show_item_info() -> void:
 		item_info.position = ceil(position+drop_area.position-Vector2(item_info_pad_value, 0.0)-Vector2(item_info.get_size().x, offset*item_info.get_size().y/2.0));
 func hide_item_info() -> void:
 	item_info.visible = false;
+	
+func set_engagement_forecast(player: PlayerUnit, opponent: EnemyUnit):
+	left_component.set_info(EngagementInfo.new(player, opponent));
+	right_component.set_info(EngagementInfo.new(opponent, player));

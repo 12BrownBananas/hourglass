@@ -25,6 +25,7 @@ var highlighted_enemy: EnemyUnit = null;
 
 #State variables for target selection
 #Note that these should probably be moved out of the game manager super-module at some point.
+var has_control: bool = false;
 var locked_on: bool = false;
 var target_select_mode: bool = false;
 
@@ -58,6 +59,20 @@ class GridTile:
 		position = Vector2(x, y);
 		occupant = null;
 
+class CombatAnimation extends Node2D:
+	var conclude_action: Callable;
+	var lifetime: float;
+	var time: float;
+	func _init(_lifetime: float, _conclusion: Callable):
+		print("Combat animation initialized.");
+		lifetime = _lifetime;
+		conclude_action = _conclusion;
+	func _process(_delta: float) -> void:
+		time = time+_delta;
+		if (time >= lifetime):
+			conclude_action.call();
+			call_deferred("free");
+
 func wait_callback():
 	print("Wait pressed");
 	
@@ -77,6 +92,7 @@ func _revert_open_target_select():
 	_undo_previous_action();
 
 func open_engagement_forecast(target: EnemyUnit):
+	_engagement_forecast.set_engagement_forecast(_player, target);
 	_engagement_forecast.force_in();
 	_target_select.force_out();
 	target_select_mode = false;
@@ -136,6 +152,8 @@ func enemy_check_routine(closest_tile: GridTile):
 		hide_enemy_information();
 
 func _input(event):
+	if (!has_control):
+		return;
 	if (!locked_on):
 		var closest_tile = get_closest_tile(get_viewport().get_mouse_position());
 		_cursor.position.x = closest_tile.position.x;
@@ -194,12 +212,19 @@ func _undo_previous_action():
 	action_stack.pop_front().call();
 
 func execute_button_callback():
-	print("Execute button pressed");
+	_engagement_forecast.force_out();
+	_execute_button.force_out();
+	has_control = false;
+	add_child(CombatAnimation.new(1.0, post_attack_callback));	
+	
+func post_attack_callback():
+	print("Post-attack callback.");
 func back_button_callback():
 	_undo_previous_action();
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	has_control = true;
 	#initialize grid
 	var xgrid = floor(scene_dimensions.x/float(tile_size)+.99);
 	var ygrid = floor(scene_dimensions.y/float(tile_size)+.99);
@@ -216,10 +241,10 @@ func _ready() -> void:
 	init_list.append(item_lookup.get_item(0));
 	init_list.append(item_lookup.get_item(2));
 	init_list.append(item_lookup.get_item(1));
-	_player.inventory.add_items(init_list);
+	_player.add_items(init_list);
 	
 	#initialize enemy compendium
-	enemy_lookup = EnemyLookup.new(_enemy_sprite_lookup);
+	enemy_lookup = EnemyLookup.new(_enemy_sprite_lookup, tile_size);
 	
 	#test synchronizing player inventory with item select box
 	_item_select.add_items(_player.inventory.items);
@@ -227,6 +252,7 @@ func _ready() -> void:
 	_item_discard_select.populate(_player.inventory.items, test_new);
 	
 	debug_enemy.set_description(enemy_lookup.get_enemy(0));
+	debug_enemy.add_item(item_lookup.get_item(1)); #debug, let's just give this guy some sort of weapon
 	
 	#position player and enemy
 	player.set_occupied_tile_callback = set_occupied_tile;

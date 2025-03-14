@@ -26,6 +26,12 @@ class Item:
 		for i in _effects:
 			effectsCopy.append(i.duplicate());
 		return Item.new(_name, _category, _stats.duplicate(), _appearance.duplicate(), effectsCopy);
+	func get_power() -> int:
+		return _stats.get_power();
+	func get_crit_chance() -> int:
+		return _stats.get_crit_chance();
+	func get_accuracy() -> int:
+		return _stats.get_accuracy();
 
 class ItemStats:
 	var _uses: int;
@@ -45,6 +51,12 @@ class ItemStats:
 		_aoe = aoe;
 	func duplicate() -> ItemStats:
 		return ItemStats.new(_uses, _power, _accuracy, _crit_chance, _ranges.duplicate(), _aoe.duplicate());
+	func get_power() -> int:
+		return _power;
+	func get_accuracy() -> int:
+		return _accuracy;
+	func get_crit_chance() -> int:
+		return _crit_chance;
 
 class ItemAppearance:
 	var _sprite: Texture2D;

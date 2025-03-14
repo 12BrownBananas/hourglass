@@ -247,7 +247,7 @@ offset_bottom = 24.0
 text = "Item Select"
 horizontal_alignment = 1
 
-[node name="EngagementForecast" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("left_component", "right_component", "drop_area", "drop_button", "item_info")]
+[node name="EngagementForecast" type="Node2D" parent="Scene/HUD" node_paths=PackedStringArray("left_component", "right_component", "drop_area", "drop_button", "item_info", "weapon_select")]
 position = Vector2(-190, 16)
 script = ExtResource("17_byv0q")
 left_component = NodePath("Control/Left")
@@ -255,6 +255,7 @@ right_component = NodePath("Control/Right")
 drop_area = NodePath("Control/DropIndicator")
 drop_button = NodePath("Control/DropIndicator/DropButton")
 item_info = NodePath("../ItemInformation")
+weapon_select = NodePath("Control/WeaponSelect")
 in_position = Vector2(0, 16)
 out_position = Vector2(-190, 16)
 
@@ -270,11 +271,7 @@ offset_right = 190.0
 offset_bottom = 240.0
 color = Color(0, 0, 0, 0.501961)
 
-[node name="Left" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("stats_readout")]
-script = ExtResource("18_lxb3v")
-stats_readout = NodePath("VBoxContainer")
-
-[node name="AttackWithLabel" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="AttackWithLabel" type="Label" parent="Scene/HUD/EngagementForecast/Control"]
 offset_left = 17.0
 offset_top = 84.0
 offset_right = 76.0
@@ -282,7 +279,7 @@ offset_bottom = 99.0
 text = "Attack With:"
 label_settings = ExtResource("19_eqynb")
 
-[node name="WeaponSelect" type="Button" parent="Scene/HUD/EngagementForecast/Control/Left"]
+[node name="WeaponSelect" type="Button" parent="Scene/HUD/EngagementForecast/Control"]
 offset_left = 16.0
 offset_top = 98.0
 offset_right = 176.0
@@ -292,7 +289,7 @@ disabled = true
 button_mask = 0
 icon = ExtResource("2_dhy2t")
 
-[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/WeaponSelect"]
+[node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/WeaponSelect"]
 layout_mode = 0
 offset_right = 160.0
 offset_bottom = 24.0
@@ -301,7 +298,7 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Durability" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/WeaponSelect"]
+[node name="Durability" type="Label" parent="Scene/HUD/EngagementForecast/Control/WeaponSelect"]
 layout_mode = 0
 offset_left = 3.0
 offset_right = 157.0
@@ -311,7 +308,7 @@ label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Prompt" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left/WeaponSelect"]
+[node name="Prompt" type="Label" parent="Scene/HUD/EngagementForecast/Control/WeaponSelect"]
 layout_mode = 0
 offset_left = 106.0
 offset_top = 24.0
@@ -319,6 +316,15 @@ offset_right = 167.0
 offset_bottom = 47.0
 text = "(Switch: Q/E)"
 label_settings = ExtResource("19_eqynb")
+
+[node name="Left" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("health", "stats_readout", "damage", "attack_counter", "hit_chance", "crit_chance")]
+script = ExtResource("18_lxb3v")
+health = NodePath("Health")
+stats_readout = NodePath("VBoxContainer")
+damage = NodePath("VBoxContainer/Damage")
+attack_counter = NodePath("VBoxContainer/Damage/AttackCounter")
+hit_chance = NodePath("VBoxContainer/HitChance")
+crit_chance = NodePath("VBoxContainer/CritChance")
 
 [node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/Left"]
 offset_right = 95.0
@@ -376,9 +382,14 @@ text = "CRIT: ###"
 label_settings = ExtResource("19_eqynb")
 horizontal_alignment = 1
 
-[node name="Right" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("stats_readout")]
+[node name="Right" type="Node2D" parent="Scene/HUD/EngagementForecast/Control" node_paths=PackedStringArray("health", "stats_readout", "damage", "attack_counter", "hit_chance", "crit_chance")]
 script = ExtResource("18_lxb3v")
+health = NodePath("Health")
 stats_readout = NodePath("VBoxContainer")
+damage = NodePath("VBoxContainer/Damage")
+attack_counter = NodePath("VBoxContainer/Damage/AttackCounter")
+hit_chance = NodePath("VBoxContainer/HitChance")
+crit_chance = NodePath("VBoxContainer/CritChance")
 
 [node name="Name" type="Label" parent="Scene/HUD/EngagementForecast/Control/Right"]
 anchors_preset = 1
