@@ -63,12 +63,50 @@ class CombatAnimation extends Node2D:
 	var conclude_action: Callable;
 	var lifetime: float;
 	var time: float;
-	func _init(_lifetime: float, _conclusion: Callable):
+	var source: Unit;
+	var target: Unit;
+	var triggered: bool;	
+	var animation_stage: int;
+	var startup_delay: float;
+	var lunge_target: Vector2;
+	var lunge_vector: Vector2;
+	var lunge_init: Vector2;
+	func _init(_lifetime: float, _conclusion: Callable, _source: Unit, _target: Unit):
 		print("Combat animation initialized.");
 		lifetime = _lifetime;
 		conclude_action = _conclusion;
+		source = _source;
+		target = _target;
+		startup_delay = _lifetime/5.0; #1/5th of the total animation length
+		triggered = false;
+		animation_stage = 0;
+		
+		lunge_target = (target.position-source.position);
+		lunge_vector = lunge_target/5.0;
+		lunge_init = target.animated_sprite.position;
 	func _process(_delta: float) -> void:
 		time = time+_delta;
+		if (triggered):
+			match (animation_stage):
+				0:
+					#lunge toward target
+					source.animated_sprite.position = source.animated_sprite.position+lunge_vector;
+					if (abs(source.animated_sprite.position-lunge_target) <= abs(lunge_vector*2.0)):
+						#we'll consider this a point-of-impact
+						animation_stage = animation_stage+1;
+						print("target should flash and shake here");
+						#trigger flash and shake on target
+				1:
+					#draw back from target
+					source.animated_sprite.position = source.animated_sprite.position-lunge_vector;
+					if (abs(lunge_init - source.animated_sprite.position) <= abs(lunge_vector)):
+						source.animated_sprite.position = lunge_init;
+						animation_stage = animation_stage+1;
+				2:
+					pass;
+		
+		if (time >= startup_delay && !triggered):
+			triggered = true;
 		if (time >= lifetime):
 			conclude_action.call();
 			call_deferred("free");
@@ -215,7 +253,7 @@ func execute_button_callback():
 	_engagement_forecast.force_out();
 	_execute_button.force_out();
 	has_control = false;
-	add_child(CombatAnimation.new(1.0, post_attack_callback));	
+	add_child(CombatAnimation.new(1.0, post_attack_callback, _player, highlighted_enemy));	
 	
 func post_attack_callback():
 	print("Post-attack callback.");
